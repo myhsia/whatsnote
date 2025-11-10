@@ -1,2 +1,23 @@
+# Unnecessary files
+/build
+*.zip
+*.pdf
+
+# macOS DS
 .DS_Store
-build
+
+# LaTeX aux files
+*.aux
+*.bbl
+*.bbl-SAVE-ERROR
+*.blg
+*.bcf
+*.fdb_latexmk
+*.fls
+*.log
+*.minted
+*.out
+*.synctex.gz
+*.synctex(busy)
+*.toc
+*.xml
