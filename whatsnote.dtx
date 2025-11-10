@@ -1,0 +1,741 @@
+% \iffalse meta-comment
+%
+% File: whatsnote.dtx
+% -----------------------------------------------------------------------
+%   Copyright (C) 2024-2025 by Mingyu Xia <myhsia@outlook.com>          *
+%                                                                       *
+%   This work may be distributed and/or modified under the conditions   *
+%   of the LaTeX Project Public License (LPPL), either version 1.3c of  *
+%   this license or (at your option) any later version.                 *
+%   The latest version of this license is in                            *
+%                                                                       *
+%       http://www.latex-project.org/lppl.txt                           *
+%                                                                       *
+%   and version 1.3c or later is part of all distributions of LaTeX     *
+%   version 2008 or later.                                              *
+%                                                                       *
+%   This work has the LPPL maintenance status `maintained'.             *
+%                                                                       *
+%   The Current Maintainer of this work is Mingyu Xia.                  *
+%                                                                       *
+%   This work consists of the files whatsnote.dtx,                      *
+%                                   whatsnote.ins,                      *
+%                 the derived files whatsnote.cls,                      *
+%                                   whats-*-module.code.tex,            *
+%           the documentation files whatsnote.pdf,                      *
+%                               and README.md.                          *
+% -----------------------------------------------------------------------
+%
+%   Any modification of this file should ensure that the copyright and
+%   license information is placed in the derived files.
+%
+% -----------------------------------------------------------------------
+%
+%<*internal>
+\iffalse
+%</internal>
+%
+%<*readme>
+[![CTAN Version](https://img.shields.io/ctan/v/whatsnote)](https://ctan.org/pkg/whatsnote)
+[![GitHub Release](https://img.shields.io/github/v/release/myhsia/whatsnote)](https://github.com/myhsia/whatsnote/releases/latest)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/myhsia/whatsnote)](https://github.com/myhsia/whatsnote/commits)
+[![Actions Status](https://github.com/myhsia/whatsnote/actions/workflows/main.yaml/badge.svg?branch=main)](https://github.com/myhsia/whatsnote/actions)
+[![GitHub Repo stars](https://img.shields.io/github/stars/myhsia/whatsnote)](https://github.com/myhsia/whatsnote)
+
+The `whatsnote` Class
+=======================
+
+The whatsnote LaTeX class provides an elegant layout and powerful tools for taking notes in science, engineering, etc.
+
+Overview
+--------
+
+See `whatsnote.pdf` for more. Happy TeXing!
+
+Issues
+------
+
+The issue tracker for `whatsnote` is currently located
+[on GitHub](https://github.com/myhsia/whatsnote/issues).
+
+Build status
+------------
+
+This project uses [GitHub Actions](https://github.com/features/actions)
+as a hosted continuous integration service. For each commit, the build status
+is tested using the current release of TeX Live.
+
+_Current build status:_ ![build status](https://github.com/myhsia/whatsnote/actions/workflows/main.yaml/badge.svg?branch=main)
+
+Copyright and License
+---------------------
+
+Copyright (C) 2024-2025 by Mingyu Xia <myhsia@outlook.com>
+
+This work may be distributed and/or modified under the conditions
+of the LaTeX Project Public License (LPPL), either version 1.3c of
+this license or (at your option) any later version.
+The latest version of this license is in
+
+    http://www.latex-project.org/lppl.txt
+
+and version 1.3c or later is part of all distributions of LaTeX
+version 2008 or later.
+
+This work has the LPPL maintenance status `maintained'.
+
+The Current Maintainer of this work is **Mingyu Xia**.
+%</readme>
+%
+%<*internal>
+\fi
+%</internal>
+%
+%<*driver>
+\documentclass[svgnames]{l3doc}
+\usepackage{pdfpages, twemojis}
+\graphicspath{{./demo/}}
+\usepackage[osf, mono = false]{libertine}
+\AddToHook{env/function/before}{\vspace*{-.5\baselineskip}}
+\ExplSyntaxOn \makeatletter
+\DeclareDocumentCommand \key { s m }
+  {
+    \IfBooleanTF {#1} { \textcolor{red}{\ttfamily \bfseries #2} }
+      {
+        \ttfamily
+        \seq_set_from_clist:Nn \l_tmpa_seq {#2}
+        \seq_set_map:NNn \l_tmpb_seq \l_tmpa_seq
+          { \exp_not:n { \textcolor{red}{\bfseries ##1} } }
+        \seq_use:Nn \l_tmpb_seq { ,~ } \:=\:
+      }
+  }
+\DeclareCommandCopy \val \meta
+\def \TFF {true\textup{\textbar\underline{\textbf{false}}}}
+\def \TTF {\textup{\underline{\textbf{true}}\textbar}false}
+\def \HoLogo@ApLaTeX #1{
+  \HOLOGO@mbox {A\kern -.05em p\kern -.05em \hologo{LaTeX}}}
+\makeatother \ExplSyntaxOff
+\newlist{keyval}{itemize}{10}
+\setlist[keyval]{leftmargin = 0pt, labelsep = 0pt}
+\makeindex
+\begin{document}
+  \DocInput{\jobname.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+% \title{^^A
+%   The \cls{whatsnote} Class\thanks{^^A
+%     \url{https://github.com/myhsia/whatsnote},
+%     \url{https://ctan.org/pkg/whatsnote}^^A
+%   }^^A
+% }
+%
+% \author{^^A
+%   Mingyu Xia \texttt{<^^A
+%     \href{mailto:xiamingyu@westlake.edu.cn}{xiamingyu@westlake.edu.cn}>^^A
+%   }^^A
+% }
+%
+% \date{Released 2025-11-10\quad \texttt{v5.0A}}
+%
+% \maketitle
+%
+% \begin{documentation}
+% 
+% \section{Introduction}
+%
+% The \cls{whatsnote} \hologo{LaTeX} class provides an elegant layout and
+% powerful tools for taking notes in science, engineering, etc.
+% It supports various compilation methods,
+% such as \hologo{pdfLaTeX}, \hologo{XeLaTeX}, \hologo{ApLaTeX},
+% \hologo{LuaLaTeX}, etc.
+%
+% \section{Usage}
+%
+% To load this class, write the line
+% \begin{quote}
+%   |\documentclass{whatsnote}|
+% \end{quote}
+%
+% \subsection{Cover configuration}
+%
+% \begin{function}{\coverset}
+%   \begin{syntax}
+%     \cs{coverset} \marg{keys}
+%   \end{syntax}
+%   The \cs{coverset} command accepts the following keys in its argument
+%   \begin{keyval}
+%     \item [\key{title}] \val{string} can set the title on the cover page.
+%     \item [\key{author, afill}] \val{string} can set the author and the
+%     affliction respectively on the cover page, and they will be combined
+%     together with a vertical bar separated.
+%     \item [\key{date}] \val{string} can set the date on the cover page.
+%     \item [\key{extinfo}] \val{string} can add contents at the south east
+%     corner of the cover page (e.g., add your personal seal (``Yìn Zhāng'' in
+%     Chinese)).
+%     \item [\key{head}] \val{file} can add a picture at the top of the
+%     cover page.
+%     \item [\key{cloto}] \val{file} can add a picture at the center cover
+%     page's white area.
+%     \item [\key{llogos}] \val{files' comma list} can add a series of pictures
+%     at the ``left bar'' of the title page.
+%   \end{keyval}
+% \end{function}
+%
+% \clearpage
+%
+% \section{Working Example} \label{mwe}
+%
+% \verbatiminput{whatsnote-demo.tex}
+%
+% \includepdf[pages = -, nup = 2x2]{whatsnote-demo.pdf}
+%
+% \end{documentation}
+%
+% \appendix \pagenumbering{Roman}
+%
+% \begin{implementation}
+%
+% \section{The Source Code}
+%
+%    \begin{macrocode}
+%<@@=whats>
+%    \end{macrocode}
+%
+% \subsection{The \texttt{whatsnote.cls} file}
+%
+%    \begin{macrocode}
+%<*class>
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\def \whatsnote@date    {2025-11-10}
+\def \whatsnote@version {v5.0A}
+\ProvidesExplPackage {whatsnote} {2025-11-10} {v5.0A}
+  {LaTeX class for taking notes in science, engineering, etc.}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\cs_new_protected:Npn \whatsnote_msg_new:nn #1#2 
+  { \msg_new:nnn { whatsnote } {#1} {#2} }
+\cs_new_protected:Npn \whatsnote_msg_error:nn #1#2
+  { \msg_error:nnn { whatsnote } {#1} {#2} }
+\cs_generate_variant:Nn \whatsnote_msg_error:nn { nx }
+\whatsnote_msg_new:nn { not found module }
+  { The ~ whats ~ module ~ `#1' ~ not ~ found. }
+\cs_new_protected_nopar:Npn \whatsnote_provide_module:n #1
+  {
+    \ProvidesExplFile {Whats-#1-module.code.tex}
+      {\whatsnote@date} {\whatsnote@version}
+      { WhatsNote ~ \text_titlecase:n {#1} ~ Module }
+  }
+\cs_new_protected_nopar:Npn \whatsnote_load_module:n #1 
+  {
+    \clist_map_inline:nn {#1}
+      {
+        \file_if_exist_input:nF { Whats-##1-module.code.tex }
+          { \whatsnote_msg_error:nn { not found module } {##1} }
+      }
+  }
+\clist_new:N \g_@@_base_class_options_clist
+\keys_define:nn { whats / classoption }
+  {
+    darkmode .bool_set:N    = \g_@@_darkmode_bool,
+      darkmode .initial:n   = false,
+      darkmode .default:n   = true,
+    unknown .code:n         = \@@_unknown_option:n { #1 },
+  }
+\cs_new_protected_nopar:Npn \@@_unknown_option:n #1
+  {
+    \tl_if_empty:nTF { #1 }
+      { \clist_gput_right:NV \g_@@_base_class_options_clist \l_keys_key_str }
+      {
+        \exp_args:NNx \clist_gput_right:Nn \g_@@_base_class_options_clist
+          { \l_keys_key_str = \exp_not:n {#1} }
+      }
+  }
+\ProcessKeyOptions [ whats / classoption ]
+\PassOptionsToClass { book } { 11pt }
+\PassOptionsToPackage { svgnames } { xcolor }
+\exp_args:NNV \LoadClass [ \g_@@_base_class_options_clist ] { book }
+\whatsnote_load_module:n { typeset, layout, theorem, cover }
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\file_input_stop:
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+%</class>
+%    \end{macrocode}
+%
+% \subsection{The \texttt{whats-typeset-module.code.tex} file}
+%
+%    \begin{macrocode}
+%<*typeset>
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\whatsnote_provide_module:n { typeset }
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\RequirePackage{amssymb, bbm, bm, cancel, extarrows,
+                mathtools, nicematrix, xfrac}
+\RequirePackage[e]{esvect}
+\let \vec \vv
+\DeclareRobustCommand \cev [1]{{\mathpalette\do@cev{#1}}}
+\newcommand \do@cev [2]{
+  \vbox{\offinterlineskip
+    \ialign{##\cr
+      \hidewidth\reflectbox{$\m@th#1\vec{}\mkern4mu$}\hidewidth\cr
+      $\m@th#1#2$\cr
+    }
+  }
+}
+\sys_if_engine_xetex:T { \PassOptionsToPackage { no-math } { fontspec } }
+\RequirePackage{fixdif, derivative}
+\newdif \D {\mathsf D}
+\newdif \upe {\mathrm e}
+\newdif \iu {\mathrm i \mkern1mu}
+\RequirePackage{siunitx}
+\DeclareSIUnit \angstrom {\text \AA}
+\let \sinh \relax \let \cosh \relax \let \tanh \relax \let \coth \relax
+\DeclareMathOperator \sinh  {sh}
+\DeclareMathOperator \cosh  {ch}
+\DeclareMathOperator \tanh  {th}
+\DeclareMathOperator \coth  {cth}
+\DeclareMathOperator \sgn   {sgn}
+\DeclareMathOperator \cotan {\qopname\relax o{ctg}}
+\DeclareMathOperator \im    {im}
+\DeclareMathOperator \adj   {adj}
+\DeclareRobustCommand \tran{^{\mkern-1.5mu\mathsf T}}
+\DeclareRobustCommand \identity {\ensuremath{\mathbbm 1}}
+\RequirePackage[version = 4]{mhchem}
+\RequirePackage{physics2}
+\usephysicsmodule{ab, ab.braket, diagmat, xmat, qtext.legacy, op.legacy}
+\DeclareRobustCommand \bra
+  {\@ifstar{\phy@d@lx{br.m}{br.a}}{\phy@d@lx{br.m}{br.a}*}}
+\DeclareRobustCommand \ket
+  {\@ifstar{\phy@d@lx{kt.m}{kt.a}}{\phy@d@lx{kt.m}{kt.a}*}}
+\DeclareRobustCommand \braket
+  {\@ifstar{\phy@d@lx{bk.m}{bk.a}}{\phy@d@lx{bk.m}{bk.a}*}}
+\DeclareRobustCommand \ketbra
+  {\@ifstar{\phy@d@lx{kb.m}{kb.a}}{\phy@d@lx{kb.m}{kb.a}*}}
+\DeclareDocumentCommand \diagmat { s O{} m }
+  {
+    \IfBooleanTF {#1}
+      { \__phy_diagmat_type:nnn {  small } {#2} {#3} }
+      { \__phy_diagmat_type:nnn {        } {#2} {#3} }
+  }
+\DeclareDocumentCommand \pdiagmat { s O{} m }
+  {
+    \IfBooleanTF {#1}
+      { \__phy_diagmat_type:nnn { psmall } {#2} {#3} }
+      { \__phy_diagmat_type:nnn { p      } {#2} {#3} }
+  }
+\DeclareDocumentCommand \bdiagmat { s O{} m }
+  {
+    \IfBooleanTF {#1}
+      { \__phy_diagmat_type:nnn { bsmall } {#2} {#3} }
+      { \__phy_diagmat_type:nnn { b      } {#2} {#3} }
+  }
+\DeclareDocumentCommand \Bdiagmat { s O{} m }
+  {
+    \IfBooleanTF {#1}
+      { \__phy_diagmat_type:nnn { Bsmall } {#2} {#3} }
+      { \__phy_diagmat_type:nnn { B      } {#2} {#3} }
+  }
+\DeclareDocumentCommand \vdiagmat { s O{} m }
+  {
+    \IfBooleanTF {#1}
+      { \__phy_diagmat_type:nnn { vsmall } {#2} {#3} }
+      { \__phy_diagmat_type:nnn { v      } {#2} {#3} }
+  }
+\DeclareDocumentCommand \Vdiagmat { s O{} m }
+  {
+    \IfBooleanTF {#1}
+      { \__phy_diagmat_type:nnn { Vsmall } {#2} {#3} }
+      { \__phy_diagmat_type:nnn { V      } {#2} {#3} }
+  }
+\RequirePackage{hyperref}
+\hypersetup{colorlinks, citecolor = teal}
+\let\oldHyPsd@CatcodeWarning\HyPsd@CatcodeWarning
+\renewcommand \HyPsd@CatcodeWarning [1]
+  {\ifnum\pdfstrcmp{#1}{math shift}=0 \else \oldHyPsd@CatcodeWarning{#1} \fi}
+\pdfstringdefDisableCommands{
+  \def\intop{int} \def\ilimits@{lim}
+  \def\infty{infty} \let\HyPsd@CatcodeWarning\@gobble
+}
+\NewDocumentCommand \mathemph { O{} m } {\ifmmode
+  \colorbox{Crimson!15}{\vphantom{$\displaystyle #1$}$\displaystyle #2$}\else
+  \colorbox{Crimson!15}{\vphantom{#1}#2}\fi}
+\color_set:nnn { eqcolor } { HTML } { 2F4F4F }
+% \def \dollardollar@begin { \def \eqcolor {\color{eqcolor}} \eqcolor $$ }
+% \def \dollardollar@end   { $$ \color_select:n {black} }
+\DeclareRobustCommand \[
+  {
+    \scan_stop:
+    \if_mode_math:
+      \@badmath
+    \else:
+      \if_mode_vertical:
+        \nointerlineskip
+        \makebox[.6\linewidth]{ }
+      \fi:
+    \dollardollar@begin^^A \color_select:n { eqcolor }
+    \fi:
+  }
+\DeclareRobustCommand \]
+  {
+    \scan_stop:
+    \if_mode_math:
+      \if_mode_inner:
+        \@badmath
+      \else:
+        \dollardollar@end
+      \fi:
+    \else:
+      \@badmath
+    \fi:
+    \ignorespaces
+  }
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\file_input_stop:
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+%</typeset>
+%    \end{macrocode}
+%
+% \subsection{The \texttt{whats-layout-module.code.tex} file}
+%
+%    \begin{macrocode}
+%<*layout>
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\whatsnote_provide_module:n { layout }
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+% Graphics
+\RequirePackage{anyfontsize, lmodern, microtype, manfnt, ragged2e, soul}
+\RequirePackage[mono = false, osf]{libertine}
+\RequirePackage[normalem]{ulem}
+\RequirePackage[svgnames]{xcolor}
+\RequirePackage[left  = 1.25in, vmargin = 1in, headheight = 15pt,
+                right = .75in,  headsep = 15pt]{geometry}
+\RequirePackage{graphicx, pgfplots}
+\pgfplotsset{compat = newest}
+\graphicspath{{./media/logos/} {./media/}}
+\RequirePackage[compat = 1.1.0]{tikz-feynhand}
+\setlength \feynhandblobsize {10mm}
+% Table and list
+\RequirePackage{booktabs, array, enumext}
+\setenumext[enumext, 1]{label = (\alph*)}
+\setenumext[enumext, 2]{label = \roman*.}
+\RequirePackage[inline]{enumitem}
+% Header & Footer
+\RequirePackage{fancyhdr}
+\fancyhead[OR]{\sffamily \rightmark}
+\fancyhead[OL]{\sffamily \thepage}
+\fancyhead[EL]{\sffamily \leftmark}
+\fancyhead[ER]{\sffamily \thepage}
+\fancyfoot[L,C,R]{}
+\renewcommand* \headrulewidth {1pt}
+\renewcommand* \footrulewidth {.5pt}
+\hook_gput_code:nnn { cmd / headrule / before } {.}
+  { \color_select:n { black!25 } }
+\dim_new:N \l_@@_footrule_tmp_dim
+\renewcommand \footrule
+  {
+    \if@fancyplain \let \footrulewidth \plainfootrulewidth \fi
+    \color_select:n { black!25 }
+    \hrule \@width \headwidth \@height \footrulewidth
+  }
+\pagestyle{fancy}
+% Paragraphs
+\linespread{1.2}
+\RequirePackage{titlesec, subcaption}
+\titleformat \chapter [hang] {\huge \bfseries \sffamily}
+  {\biolinumLF \scshape \@chapapp\ \thechapter} {1em} {}
+\titlespacing* \chapter {\z@} {\z@} {30pt}
+\titlespacing \paragraph {\z@} {1.5ex minus .1 ex} {1pc}
+\RequirePackage{paracol}
+\columnratio{.64}
+\RequirePackage{framed}
+\setlength \FrameSep {\z@}
+\renewcommand* \chaptermark[1] {
+  \markboth {\normalfont \biolinumLF \scshape
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter \@chapapp \ \thechapter .~\ \fi
+    \fi #1}{}}
+\renewcommand* \sectionmark[1] {
+  \markright {\normalfont \sffamily
+    \ifnum \c@secnumdepth >\z@ \thesection . \
+    \fi #1}}
+\setlength \parindent {\z@}
+\renewcommand \@pnumwidth {2.5em}
+\renewcommand \appendix {
+  \cleardoublepage
+  \setcounter{chapter}{0}
+  \setcounter{section}{0}
+  \gdef\@chapapp{\appendixname}
+  \gdef\thechapter{\@Alph\c@chapter}
+  \addtocontents {toc} { \protect \makeatletter }
+  \addtocontents {toc} {
+    \token_to_str:N \renewcommand* \token_to_str:N \l@section
+      { \token_to_str:N \@dottedtocline {1} {1.5em} {5em} }
+  }
+  \addtocontents {toc} { \protect \makeatother }
+  \renewcommand*\familydefault {\sfdefault}
+  \pagenumbering{roman}
+}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\file_input_stop:
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+%</layout>
+%    \end{macrocode}
+%
+% \subsection{The \texttt{whats-theorem-module.code.tex} file}
+%
+%    \begin{macrocode}
+%<*theorem>
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\whatsnote_provide_module:n { theorem }
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\RequirePackage{keytheorems}
+\newcounter {week}
+\newcommand \newweek { \refstepcounter{week} \clearpage }
+\newkeytheorem{theorem}[parent = section, style = definition]
+\newkeytheorem{example}[parent = section, style = definition]
+\newkeytheorem{definition}[parent = section, style = definition]
+\newkeytheorem{problem}[parent = week, style = definition]
+\newkeytheorem{solution}[numbered = false, style = definition]
+\newkeytheorem{remark}[numbered = false, style = remark]
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\file_input_stop:
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+%</theorem>
+%    \end{macrocode}
+%
+% \subsection{The \texttt{whats-cover-module.code.tex} file}
+%
+%    \begin{macrocode}
+%<*cover>
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\whatsnote_provide_module:n { cover }
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\RequirePackage{tikz, zref-totpages}
+\ExplSyntaxOff
+\usetikzlibrary{fadings, patterns, arrows.meta}
+\tikzset{ > = Stealth, every picture/.append style = {
+          line join = round, line cap = round, thick } }
+\ExplSyntaxOn
+\DeclareDocumentCommand \coverset { m } { \keys_set:nn { @@ / coverset } {#1} }
+\clist_new:N \l_@@_cover_llogos_clist
+\keys_define:nn { @@ / coverset }
+  {
+    title         .tl_gset:N    = \@title,
+    author        .tl_gset:N    = \@author,
+    afill         .tl_gset:N    = \@afill,
+    date          .tl_gset:N    = \@date,
+      date        .initial:n    = \today,
+    extinfo       .tl_set:N     = \l_@@_cover_extinfo_tl,
+    head          .tl_set:N     = \l_@@_cover_head_tl,
+    clogo         .tl_set:N     = \l_@@_cover_clogo_tl,
+    clogo-pattern .tl_set:N     = \l_@@_cover_clogo_pattern_tl,
+    llogos        .clist_set:N  = \l_@@_cover_llogos_clist,
+  }
+\DeclareRobustCommand *\sidehead [1] { \tl_gset:Nn \@sidehead {#1} }
+\DeclareRobustCommand *\sidefoot [1] { \tl_gset:Nn \@sidefoot {#1} }
+\sidehead{\@title}
+\sidefoot{\thepage\,/\,\ztotpages}
+\hook_gset_rule:nnnn { shipout / background } { @@ } { before } { pgfrcs }
+\DeclareDocumentCommand \maketitle { O { gray } }
+  {
+    \@@_@maketitle:n {#1}
+    \hook_gput_code:nnn { shipout / background } { @@ }
+      { \if@mainmatter \@@_sidebar_hook:n {#1} \fi }
+  }
+\DeclareCommandCopy \save@cleardoublepage \cleardoublepage
+\cs_new_protected_nopar:Npn \@@_@maketitle:n #1
+  {
+    \pagecolor{#1!10}
+    \let \cleardoublepage \clearpage
+    \begin{titlepage}
+      \begin{tikzpicture} [ remember ~ picture, overlay ]
+        \tl_if_empty:NF \l_@@_cover_head_tl
+          {
+            \node [ yshift = .325\paperheight, opacity = .5,
+                    rotate ~ around = { pi \c_colon_str
+                    ([yshift = .325\paperheight]current ~ page.center)} ]
+              at (current ~ page.center)
+              { \includegraphics [width = \paperwidth]
+                { \l_@@_cover_head_tl } };
+          }
+        \clist_if_empty:NF \l_@@_cover_llogos_clist
+          {
+            \int_step_inline:nn { \clist_count:N \l_@@_cover_llogos_clist }
+              {
+                \node
+                  [ opacity = .25, yshift = {
+                    -.6\paperheight / 2 /
+                      \clist_count:N \l_@@_cover_llogos_clist +
+                    ##1 * .6\paperheight /
+                      \clist_count:N \l_@@_cover_llogos_clist }
+                  ] at ([xshift = .1\paperwidth]current ~ page.south ~ west)
+                  {
+                    \includegraphics
+                      [
+                        height  = .6\paperheight/6,
+                        width   = .16\paperwidth, keepaspectratio
+                      ] { \clist_item:Nn \l_@@_cover_llogos_clist { ##1 } }
+                  };
+              }
+          }
+        \fill [ white, opacity = .5 ] (current ~ page.south ~ east) rectangle +
+          (-.8\paperwidth, .6\paperheight);
+        \node [ gray, above ~ left, inner ~ sep = 1em ] at
+          (current ~ page.south ~ east) { \l_@@_cover_extinfo_tl };
+        \fill [ white, opacity = .5 ] (current ~ page.south ~ east) rectangle +
+          (-.7\paperwidth, .7\paperheight);
+        \node
+          [ shift = {(-.35*\paperwidth,.65*\paperheight)},
+            darkgray, font = \Huge \bfseries \sffamily
+          ] at (current ~ page.south ~ east) { \@title };
+        \node
+          [ shift = {(-.75*\paperwidth,.3*\paperheight)},
+            rotate = 90, gray, opacity = .6, font = \huge \sffamily
+          ] at (current ~ page.south ~ east) { \@author\ | \ \@afill };
+        \tl_if_empty:NF { \l_@@_cover_clogo_tl }
+          {
+            \node (cover ~ logo)
+              [ shift = {(.65*\paperwidth,.3*\paperheight)}]
+              at (current ~ page.south ~ west)
+              {
+                \includegraphics[ height = .4\paperheight ]
+                  { \l_@@_cover_clogo_tl }
+              };
+          }
+      \end{tikzpicture}
+      \clearpage \thispagestyle{empty}
+      \centering
+      \vspace* \fill \sffamily
+        \Large This ~ page ~ was ~ intentionally ~ left ~ blank.
+      \vspace* \fill
+    \end{titlepage}
+    \pagecolor{Beige!30}
+  }
+\cs_new_protected:Npn \@@_sidebar_hook:n #1
+  {
+    \int_if_odd:nTF { \arabic { page } }
+      {
+        \tikz [remember ~ picture, overlay] {
+          \fill [ #1, opacity = .125 ]
+                (current ~ page.south ~ west) rectangle
+                ([xshift = +.5in]current ~ page.north ~ west);
+          \node [ opacity = .25, inner ~ xsep = .25in,
+                  above, inner ~ ysep = {1in - \footskip + 1ex},
+                  font = \sffamily \large,
+                ] at ([xshift = +.25in]current ~ page.south ~ west)
+                { \rotatebox {-90} {\@sidehead} };
+          \node [ opacity = .25, inner ~ xsep = .25in,
+                  above, inner ~ ysep = \headsep, yshift = -1in,
+                  font = \sffamily \large,
+                ] at ([xshift = +.25in]current ~ page.north ~ west)
+                { \rotatebox {-90} {\@sidefoot} };
+          }
+      }
+      {
+        \tikz [remember ~ picture, overlay] {
+          \fill [ #1, opacity = .125 ]
+                (current ~ page.south ~ east) rectangle
+                ([xshift = -.5in]current ~ page.north ~ east);
+          \node [ opacity = .25, inner ~ xsep = .25in,
+                  above, inner ~ ysep = {1in - \footskip + 1ex},
+                  font = \sffamily \large,
+                ] at ([xshift = -.25in]current ~ page.south ~ east)
+                { \rotatebox {+90} {\@sidehead} };
+          \node [ opacity = .25, inner ~ xsep = .25in,
+                  above, inner ~ ysep = \headsep, yshift = -1in,
+                  font = \sffamily \large,
+                ] at ([xshift = -.25in]current ~ page.north ~ east)
+                { \rotatebox {+90} {\@sidefoot} };
+          }
+      }
+  }
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\file_input_stop:
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+%</cover>
+%    \end{macrocode}
+%
+% \end{implementation}
+% \clearpage
+% \PrintIndex
+% \iffalse
+%<*thmlist>
+%    \begin{macrocode}
+\ProvidesExplPackage {thmlist} {2024-11-26} {0.1b}
+  {Formally a part of the class litebook}
+\msg_new:nnn { thmlist } { Obsolete ~ LaTeX ~ Package }
+  { The ~ thmlist ~ package ~ is ~ now ~ obsoleted. ~ 
+    Please ~ load ~ the ~ `whatsnote' ~ class ~ instead, ~ or ~ 
+    access ~ the ~ 'obsolete ~ packages' ~ dictionary ~ on ~ CTAN.
+  }
+\msg_error:nn { thmlist } { Obsolete ~ LaTeX ~ Package }
+\file_input_stop:
+%    \end{macrocode}
+%</thmlist>
+%<*litebook>
+%    \begin{macrocode}
+\ProvidesExplClass {litebook} {2024-11-26} {0.2b}
+  {Now replaced by the whatsnote class}
+\msg_new:nnn { litebook } { Obsolete ~ LaTeX ~ Package }
+  { The ~ litebook ~ class ~ is ~ now ~ obsoleted. ~ 
+    Please ~ load ~ the ~ `whatsnote' ~ class ~ instead, ~ or ~ 
+    access ~ the ~ 'obsolete ~ packages' ~ dictionary ~ on ~ CTAN. }
+\msg_error:nn { litebook } { Obsolete ~ LaTeX ~ Package }
+\LoadClass{minimal}
+\file_input_stop:
+%    \end{macrocode}
+%</litebook>
+%<*litesolution>
+%    \begin{macrocode}
+\ProvidesExplClass {litesolution} {2024-11-26} {2.4a}
+  {Now replaced by the whatsnote class}
+\msg_new:nnn { litesolution } { Obsolete ~ LaTeX ~ Package }
+  { The ~ litesolution ~ class ~ is ~ now ~ obsoleted. ~ 
+    Please ~ load ~ the ~ `whatsnote' ~ class ~ instead, ~ or ~ 
+    access ~ the ~ 'obsolete ~ packages' ~ dictionary ~ on ~ CTAN. }
+\msg_error:nn { litesolution } { Obsolete ~ LaTeX ~ Package }
+\LoadClass{minimal}
+\file_input_stop:
+%    \end{macrocode}
+%</litesolution>
+% \fi

@@ -1,0 +1,91 @@
+\iffalse meta-comment
+
+File: whatsnote.ins
+-----------------------------------------------------------------------
+  Copyright (C) 2024-2025 by Mingyu Xia <myhsia@outlook.com>          *
+                                                                      *
+  This work may be distributed and/or modified under the conditions   *
+  of the LaTeX Project Public License (LPPL), either version 1.3c of  *
+  this license or (at your option) any later version.                 *
+  The latest version of this license is in                            *
+                                                                      *
+      http://www.latex-project.org/lppl.txt                           *
+                                                                      *
+  and version 1.3c or later is part of all distributions of LaTeX     *
+  version 2008 or later.                                              *
+                                                                      *
+  This work has the LPPL maintenance status `maintained'.             *
+                                                                      *
+  The Current Maintainer of this work is Mingyu Xia.                  *
+                                                                      *
+  This work consists of the files whatsnote.dtx,                      *
+                                  whatsnote.ins,                      *
+                the derived files whatsnote.cls,                      *
+                                  whats-*-module.code.tex,            *
+          the documentation files whatsnote.pdf,                      *
+                              and README.md.                          *
+-----------------------------------------------------------------------
+
+  Any modification of this file should ensure that the copyright and
+  license information is placed in the derived files.
+
+-----------------------------------------------------------------------
+
+\fi
+
+\input l3docstrip %
+\askforoverwritefalse
+
+\preamble
+-----------------------------------------------------------------------
+  Copyright (C) 2024-2025 by Mingyu Xia <myhsia@outlook.com>          *
+                                                                      *
+  This work may be distributed and/or modified under the conditions   *
+  of the LaTeX Project Public License (LPPL), either version 1.3c of  *
+  this license or (at your option) any later version.                 *
+  The latest version of this license is in                            *
+                                                                      *
+      http://www.latex-project.org/lppl.txt                           *
+                                                                      *
+  and version 1.3c or later is part of all distributions of LaTeX     *
+  version 2008 or later.                                              *
+                                                                      *
+  This work has the LPPL maintenance status `maintained'.             *
+                                                                      *
+  The Current Maintainer of this work is Mingyu Xia.                  *
+-----------------------------------------------------------------------
+\endpreamble
+
+\postamble
+-----------------------------------------------------------------------
+  This work consists of the files whatsnote.dtx,                      *
+                                  whatsnote.ins,                      *
+                the derived files whatsnote.cls,                      *
+                                  whats-*-module.code.tex,            *
+          the documentation files whatsnote.pdf,                      *
+                              and README.md.                          *
+-----------------------------------------------------------------------
+\endpostamble
+
+\keepsilent
+
+\generate{
+  \usedir{tex/latex/whatsnote}
+    \file{\jobname.cls}                  {\from{\jobname.dtx}{class}  }
+    \file{whats-typeset-module.code.tex} {\from{\jobname.dtx}{typeset}}
+    \file{whats-layout-module.code.tex}  {\from{\jobname.dtx}{layout} }
+    \file{whats-theorem-module.code.tex} {\from{\jobname.dtx}{theorem}}
+    \file{whats-cover-module.code.tex}   {\from{\jobname.dtx}{cover}  }
+  \nopreamble \nopostamble
+    \file{thmlist.sty}                   {\from{\jobname.dtx}{thmlist}}
+    \file{litebook.sty}                 {\from{\jobname.dtx}{litebook}}
+    \file{litesolution.sty}         {\from{\jobname.dtx}{litesolution}}
+  \usedir{doc/latex/whatsnote}
+  \nopreamble \nopostamble
+    \file{README.md}         {\from{\jobname.dtx}{readme}}
+  }
+
+\endbatchfile
+\endinput
+%%
+%% End of file `whatsnote.ins'

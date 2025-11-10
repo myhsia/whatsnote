@@ -1,0 +1,26 @@
+\documentclass[11pt]{whatsnote}
+
+\usepackage[versionfa = 7, hook]{fontawesomescaled}
+\usepackage{duckuments}
+\coverset{
+  title   = Demo for the \textsc{WhatsNote} Package,
+  author  = \ttfamily \textsc{Mingyu Xia},
+  afill   = <\href{mailto:xiamingyu@westlake.edu.cn}
+              {xiamingyu@westlake.edu.cn}>,
+  date    = November 2025,
+  extinfo = {\href{https://github.com/myhsia/whatsnote}
+              {\faIconScaled[scale = 4]{github}}},
+  head    = example-image-golden.pdf,
+  clogo   = example-grid-100x100pt.pdf,
+  llogos  = {example-image-duck, example-image-duck,
+             example-image-duck, example-image-duck}
+}
+
+\begin{document}
+
+\maketitle[teal]
+\frontmatter \tableofcontents \mainmatter
+
+\duckument[full]
+
+\end{document}
