@@ -42,7 +42,7 @@ siunitx
 times
 underscore
 units
-
+# For the `whatsnote` class
 amscls
 amsfonts
 anyfontsize

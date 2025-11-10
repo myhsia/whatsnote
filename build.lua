@@ -17,7 +17,11 @@ uploader            = "Mingyu Xia"
 maintainid          = "myhsia"
 email               = "myhsia@outlook.com"
 repository          = "https://github.com/" .. maintainid .. "/" .. module
-announcement        = [[Version 5.0A released.]]
+announcement        = [[Version 5.0A released.
+- Transferred to literature programming
+- Add the l3build script
+- Redesigned the cover and the inner pages
+]]
 summary             = "LaTeX class for taking notes in science, engineering, etc."
 description         = "The whatsnote LaTeX class provides an elegant layout and powerful tools for taking notes in science, engineering, etc."
 
