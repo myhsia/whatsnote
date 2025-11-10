@@ -1,0 +1,46 @@
+# The test framework itself
+l3build
+#
+# Base
+latex
+latex-bin
+#
+# For the doc target and testing l3doc
+alphalph
+amsfonts
+bookmark
+booktabs
+catchfile
+cm-super
+colortbl
+csquotes
+ctex
+dvips
+ec
+enumitem
+epstopdf
+epstopdf-pkg
+everysel
+fancyvrb
+framed
+hologo
+hypdoc
+hyperref
+latexmk
+libertine
+lipsum
+listings
+makeindex
+mathpazo
+metalogo
+oberdiek
+pdflscape
+pdfpages
+pgf
+psnfss
+ragged2e
+siunitx
+times
+twemojis
+underscore
+units
