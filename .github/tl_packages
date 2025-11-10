@@ -14,7 +14,6 @@ catchfile
 cm-super
 colortbl
 csquotes
-ctex
 dvips
 ec
 enumitem
@@ -49,11 +48,12 @@ anyfontsize
 booktabs
 cancel
 caption
-cm
+bbm
 derivative
 duckuments
 enumext
 enumitem
+esvect
 extarrows
 fancyhdr
 fixdif
