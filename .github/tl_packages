@@ -43,6 +43,7 @@ times
 underscore
 units
 
+amscls
 amsfonts
 anyfontsize
 booktabs
@@ -72,6 +73,7 @@ paracol
 pgfplots
 physics2
 ragged2e
+refcount
 siunitx
 soul
 titlesec
