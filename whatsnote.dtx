@@ -92,11 +92,10 @@ The Current Maintainer of this work is **Mingyu Xia**.
 %</internal>
 %
 %<*driver>
-\documentclass[svgnames]{l3doc}
+\documentclass{l3doc}
 \usepackage{pdfpages}
 \graphicspath{{./demo/}}
 \usepackage[osf, mono = false]{libertine}
-\AddToHook{env/function/before}{\vspace*{-.5\baselineskip}}
 \ExplSyntaxOn \makeatletter
 \DeclareDocumentCommand \key { s m }
   {
@@ -137,12 +136,12 @@ The Current Maintainer of this work is **Mingyu Xia**.
 %   }^^A
 % }
 %
-% \date{Released 2025-11-10\quad \texttt{v5.0A}}
+% \date{Released 2025-11-12\quad \texttt{v5.0B}}
 %
 % \maketitle
 %
 % \begin{documentation}
-% 
+%
 % \section{Introduction}
 %
 % The \cls{whatsnote} \hologo{LaTeX} class provides an elegant layout and
@@ -164,7 +163,8 @@ The Current Maintainer of this work is **Mingyu Xia**.
 %   \begin{syntax}
 %     \cs{coverset} \marg{keys}
 %   \end{syntax}
-%   The \cs{coverset} command accepts the following keys in its argument
+%   The \cs{coverset} macro can config the cover, the mandatory argument
+%   accepts the following keys
 %   \begin{keyval}
 %     \item [\key{title}] \val{string} can set the title on the cover page.
 %     \item [\key{author, afill}] \val{string} can set the author and the
@@ -174,16 +174,35 @@ The Current Maintainer of this work is **Mingyu Xia**.
 %     \item [\key{extinfo}] \val{string} can add contents at the south east
 %     corner of the cover page (e.g., add your personal seal (``Yìn Zhāng'' in
 %     Chinese)).
-%     \item [\key{head}] \val{file} can add a picture at the top of the
-%     cover page.
-%     \item [\key{cloto}] \val{file} can add a picture at the center cover
-%     page's white area.
+%     \item [\key{head, clogo}] \val{file} can add pictures at the top /
+%     the center white area of the cover page accordingly.
 %     \item [\key{llogos}] \val{files' comma list} can add a series of pictures
 %     at the ``left bar'' of the title page.
 %   \end{keyval}
 % \end{function}
 %
-% \clearpage
+% \begin{function}{\maketitle}
+%   \begin{syntax}
+%     \cs{maketitle} \oarg{color}
+%   \end{syntax}
+%   The \cs{maketitle} macro can generate the cover and config the theme color
+%   in its optional argument.
+% \end{function}
+%
+% \begin{function}{\sidehead, \sidefoot}
+%   \begin{syntax}
+%     \cs{sidehead} \marg{sidebar header} \cs{sidefoot} \marg{sidebar footer}
+%   \end{syntax}
+%   The \cs{sidehead, sidefoot} macros can config the header and footer in the
+%   sidebar.
+% \end{function}
+%
+% \begin{function}{\mathemph}
+%   \begin{syntax}
+%     \cs{mathemph} \marg{math equation}
+%   \end{syntax}
+%   The \cs{mathemph} macro can color-emphing math formula.
+% \end{function}
 %
 % \section{Working Example} \label{mwe}
 %
@@ -199,53 +218,79 @@ The Current Maintainer of this work is **Mingyu Xia**.
 %
 % \section{The Source Code}
 %
+% Assign the module name of the variables and control sequences, which will be
+% automatically replaced by \pkg{l3docstrip}.
 %    \begin{macrocode}
 %<@@=whats>
 %    \end{macrocode}
 %
 % \subsection{The \texttt{whatsnote.cls} file}
 %
+% Start the optionlist |class| for \pkg{l3docstrip}.
 %    \begin{macrocode}
 %<*class>
 %    \end{macrocode}
-%
+% Define the date, version, and summary variables, and declare the class.
 %    \begin{macrocode}
-\def \whatsnote@date    {2025-11-10}
-\def \whatsnote@version {v5.0A}
-\ProvidesExplPackage {whatsnote} {2025-11-10} {v5.0A}
+\def \whatsnote@date    {2025-11-12}
+\def \whatsnote@version {v5.0B}
+\def \whatsnote@tldr
   {LaTeX class for taking notes in science, engineering, etc.}
+\ProvidesExplClass {whatsnote} {\whatsnote@date}
+  {\whatsnote@version} {\whatsnote@tldr}
 %    \end{macrocode}
-%
+% \begin{macro}{\@@_msg_new:nn}
+% \begin{macro}{\@@_msg_error:nn, \@@_msg_warning:nn}
+% Functions for broadcast errors and warnings.
 %    \begin{macrocode}
-\cs_new_protected:Npn \whatsnote_msg_new:nn #1#2 
+\cs_new_protected:Npn \@@_msg_new:nn #1#2 
   { \msg_new:nnn { whatsnote } {#1} {#2} }
-\cs_new_protected:Npn \whatsnote_msg_error:nn #1#2
+\cs_new_protected:Npn \@@_msg_error:nn #1#2
   { \msg_error:nnn { whatsnote } {#1} {#2} }
-\cs_generate_variant:Nn \whatsnote_msg_error:nn { nx }
-\whatsnote_msg_new:nn { not found module }
-  { The ~ whats ~ module ~ `#1' ~ not ~ found. }
-\cs_new_protected_nopar:Npn \whatsnote_provide_module:n #1
+\cs_new_protected:Npn \@@_msg_warning:nn #1#2
+  { \msg_error:nnn { whatsnote } {#1} {#2} }
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\@@_provide_module:n}
+% Function for providing modules with the predefined date and version variables.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \@@_provide_module:n #1
   {
-    \ProvidesExplFile {Whats-#1-module.code.tex}
+    \ProvidesExplFile {whats-#1-module.code.tex}
       {\whatsnote@date} {\whatsnote@version}
-      { WhatsNote ~ \text_titlecase:n {#1} ~ Module }
+      { whatsNote ~ \text_titlecase:n {#1} ~ Module }
   }
-\cs_new_protected_nopar:Npn \whatsnote_load_module:n #1 
+%    \end{macrocode}
+% \begin{macro}{\@@_load_module:n}
+% Function for loading modules.
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \@@_load_module:n #1 
   {
     \clist_map_inline:nn {#1}
       {
-        \file_if_exist_input:nF { Whats-##1-module.code.tex }
-          { \whatsnote_msg_error:nn { not found module } {##1} }
+        \file_if_exist_input:nF { whats-##1-module.code.tex }
+          { \@@_msg_error:nn { not found module } {##1} }
       }
   }
+\@@_msg_new:nn { not found module }
+  { The ~ whats ~ module ~ `#1' ~ not ~ found. }
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \begin{variable}{\g_@@_base_class_options_clist}
+% Variable for storing global option for basic class.
+%    \begin{macrocode}
 \clist_new:N \g_@@_base_class_options_clist
 \keys_define:nn { whats / classoption }
   {
-    darkmode .bool_set:N    = \g_@@_darkmode_bool,
-      darkmode .initial:n   = false,
-      darkmode .default:n   = true,
-    unknown .code:n         = \@@_unknown_option:n { #1 },
+    unknown .code:n = \@@_unknown_option:n { #1 },
   }
+%    \end{macrocode}
+% \end{variable}
+% \begin{macro}{\@@_unknown_option:n}
+% Parsing unknown options: pass them to the basic class.
+%    \begin{macrocode}
 \cs_new_protected_nopar:Npn \@@_unknown_option:n #1
   {
     \tl_if_empty:nTF { #1 }
@@ -256,33 +301,46 @@ The Current Maintainer of this work is **Mingyu Xia**.
       }
   }
 \ProcessKeyOptions [ whats / classoption ]
+%    \end{macrocode}
+% \end{macro}
+% Load basic class with some preloaded options.
+%    \begin{macrocode}
 \PassOptionsToClass { book } { 11pt }
 \PassOptionsToPackage { svgnames } { xcolor }
 \exp_args:NNV \LoadClass [ \g_@@_base_class_options_clist ] { book }
-\whatsnote_load_module:n { typeset, layout, theorem, cover }
 %    \end{macrocode}
-%
+% Load modules for \cls{whatsnote}.
+%    \begin{macrocode}
+\@@_load_module:n { typeset, layout, theorem, cover }
+%    \end{macrocode}
+% End the input stream of \file{whatsnote.cls}.
 %    \begin{macrocode}
 \file_input_stop:
 %    \end{macrocode}
-%
+% End the optionlist |class| for \pkg{l3docstrip}.
 %    \begin{macrocode}
 %</class>
 %    \end{macrocode}
 %
 % \subsection{The \texttt{whats-typeset-module.code.tex} file}
 %
+% Start the optionlist |typeset| for \pkg{l3docstrip}.
 %    \begin{macrocode}
 %<*typeset>
 %    \end{macrocode}
-%
+% Declare the module file.
 %    \begin{macrocode}
-\whatsnote_provide_module:n { typeset }
+\@@_provide_module:n { typeset }
 %    \end{macrocode}
-%
+% Load the \pkg{amssymb}, \pkg{bbm}, \pkg{bm}, \pkg{cancel}, \pkg{extarrows},
+% \pkg{mathtools}, \pkg{nicematrix}, \pkg{xfrac} packages.
 %    \begin{macrocode}
 \RequirePackage{amssymb, bbm, bm, cancel, extarrows,
                 mathtools, nicematrix, xfrac}
+%    \end{macrocode}
+% Load the |e| style \pkg{esvect} package for \cs[no-index]{vec} arrow,
+% then define the anti-vector arrow.
+%    \begin{macrocode}
 \RequirePackage[e]{esvect}
 \let \vec \vv
 \DeclareRobustCommand \cev [1]{{\mathpalette\do@cev{#1}}}
@@ -294,13 +352,18 @@ The Current Maintainer of this work is **Mingyu Xia**.
     }
   }
 }
+%    \end{macrocode}
+% Load the \pkg{fixdif} and \pkg{derivative} packages for inputting math
+% derivatives, suppress warnings when using |xetex|.
+%    \begin{macrocode}
 \sys_if_engine_xetex:T { \PassOptionsToPackage { no-math } { fontspec } }
 \RequirePackage{fixdif, derivative}
+%    \end{macrocode}
+% Define some mathematic operators.
+%    \begin{macrocode}
 \newdif \D {\mathsf D}
 \newdif \upe {\mathrm e}
 \newdif \iu {\mathrm i \mkern1mu}
-\RequirePackage{siunitx}
-\DeclareSIUnit \angstrom {\text \AA}
 \let \sinh \relax \let \cosh \relax \let \tanh \relax \let \coth \relax
 \DeclareMathOperator \sinh  {sh}
 \DeclareMathOperator \cosh  {ch}
@@ -312,9 +375,30 @@ The Current Maintainer of this work is **Mingyu Xia**.
 \DeclareMathOperator \adj   {adj}
 \DeclareRobustCommand \tran{^{\mkern-1.5mu\mathsf T}}
 \DeclareRobustCommand \identity {\ensuremath{\mathbbm 1}}
+%    \end{macrocode}
+% Load the \pkg{siunitx} package for inputting physics units,
+% then declare the unit ``angstrom''.
+%    \begin{macrocode}
+\RequirePackage{siunitx}
+\DeclareSIUnit \angstrom {\text \AA}
+%    \end{macrocode}
+% Load the \pkg{mhchem} package for inputting chemistry formula.
+%    \begin{macrocode}
 \RequirePackage[version = 4]{mhchem}
+%    \end{macrocode}
+% Load the \pkg{physics2} package's some modules for quick math and physics
+% input. Temporarily change the module name for hacking the package\footnote{
+% \href{https://github.com/AlphaZTX/}{|@AlphaZTX|} has not merged
+% \href{https://github.com/AlphaZTX/physics2/issues/28}{my suggestion}
+% for the \pkg{physics2} package. Blame him!}.
+%    \begin{macrocode}
+%<@@=phy>
 \RequirePackage{physics2}
 \usephysicsmodule{ab, ab.braket, diagmat, xmat, qtext.legacy, op.legacy}
+%    \end{macrocode}
+% Switch the star and non-star branches for the Dirac brackets inputting
+% commands to make the non-equal height brackets the default.
+%    \begin{macrocode}
 \DeclareRobustCommand \bra
   {\@ifstar{\phy@d@lx{br.m}{br.a}}{\phy@d@lx{br.m}{br.a}*}}
 \DeclareRobustCommand \ket
@@ -323,42 +407,53 @@ The Current Maintainer of this work is **Mingyu Xia**.
   {\@ifstar{\phy@d@lx{bk.m}{bk.a}}{\phy@d@lx{bk.m}{bk.a}*}}
 \DeclareRobustCommand \ketbra
   {\@ifstar{\phy@d@lx{kb.m}{kb.a}}{\phy@d@lx{kb.m}{kb.a}*}}
+%    \end{macrocode}
+% Extend the |diagmat| module for the \pkg{physics2} package: support the small
+% matrices, and enable users to modify the alignments of the matrices' elements.
+%    \begin{macrocode}
 \DeclareDocumentCommand \diagmat { s O{} m }
   {
     \IfBooleanTF {#1}
-      { \__phy_diagmat_type:nnn {  small } {#2} {#3} }
-      { \__phy_diagmat_type:nnn {        } {#2} {#3} }
+      { \@@_diagmat_type:nnn {  small } {#2} {#3} }
+      { \@@_diagmat_type:nnn {        } {#2} {#3} }
   }
 \DeclareDocumentCommand \pdiagmat { s O{} m }
   {
     \IfBooleanTF {#1}
-      { \__phy_diagmat_type:nnn { psmall } {#2} {#3} }
-      { \__phy_diagmat_type:nnn { p      } {#2} {#3} }
+      { \@@_diagmat_type:nnn { psmall } {#2} {#3} }
+      { \@@_diagmat_type:nnn { p      } {#2} {#3} }
   }
 \DeclareDocumentCommand \bdiagmat { s O{} m }
   {
     \IfBooleanTF {#1}
-      { \__phy_diagmat_type:nnn { bsmall } {#2} {#3} }
-      { \__phy_diagmat_type:nnn { b      } {#2} {#3} }
+      { \@@_diagmat_type:nnn { bsmall } {#2} {#3} }
+      { \@@_diagmat_type:nnn { b      } {#2} {#3} }
   }
 \DeclareDocumentCommand \Bdiagmat { s O{} m }
   {
     \IfBooleanTF {#1}
-      { \__phy_diagmat_type:nnn { Bsmall } {#2} {#3} }
-      { \__phy_diagmat_type:nnn { B      } {#2} {#3} }
+      { \@@_diagmat_type:nnn { Bsmall } {#2} {#3} }
+      { \@@_diagmat_type:nnn { B      } {#2} {#3} }
   }
 \DeclareDocumentCommand \vdiagmat { s O{} m }
   {
     \IfBooleanTF {#1}
-      { \__phy_diagmat_type:nnn { vsmall } {#2} {#3} }
-      { \__phy_diagmat_type:nnn { v      } {#2} {#3} }
+      { \@@_diagmat_type:nnn { vsmall } {#2} {#3} }
+      { \@@_diagmat_type:nnn { v      } {#2} {#3} }
   }
 \DeclareDocumentCommand \Vdiagmat { s O{} m }
   {
     \IfBooleanTF {#1}
-      { \__phy_diagmat_type:nnn { Vsmall } {#2} {#3} }
-      { \__phy_diagmat_type:nnn { V      } {#2} {#3} }
+      { \@@_diagmat_type:nnn { Vsmall } {#2} {#3} }
+      { \@@_diagmat_type:nnn { V      } {#2} {#3} }
   }
+%    \end{macrocode}
+% Restore the module name.
+%    \begin{macrocode}
+%<@@=whats>
+%    \end{macrocode}
+% Load and config the \pkg{hyperref} package, suppress the |bookmark| warnings.
+%    \begin{macrocode}
 \RequirePackage{hyperref}
 \hypersetup{colorlinks, citecolor = teal}
 \let\oldHyPsd@CatcodeWarning\HyPsd@CatcodeWarning
@@ -368,10 +463,21 @@ The Current Maintainer of this work is **Mingyu Xia**.
   \def\intop{int} \def\ilimits@{lim}
   \def\infty{infty} \let\HyPsd@CatcodeWarning\@gobble
 }
+%    \end{macrocode}
+% \begin{macro}{\mathemph}
+% Macro for color-emphing math formula.
+%    \begin{macrocode}
 \NewDocumentCommand \mathemph { O{} m } {\ifmmode
   \colorbox{Crimson!15}{\vphantom{$\displaystyle #1$}$\displaystyle #2$}\else
   \colorbox{Crimson!15}{\vphantom{#1}#2}\fi}
+%    \end{macrocode}
+% \end{macro}
+%    \begin{macrocode}
 \color_set:nnn { eqcolor } { HTML } { 2F4F4F }
+%    \end{macrocode}
+% Restore the definition for \cs{[} and \cs{]} changed by \pkg{amsmath},
+% then apply the equations' color (high-unstable, temporarily disabled).
+%    \begin{macrocode}
 % \def \dollardollar@begin { \def \eqcolor {\color{eqcolor}} \eqcolor $$ }
 % \def \dollardollar@end   { $$ \color_select:n {black} }
 \DeclareRobustCommand \[
@@ -384,7 +490,7 @@ The Current Maintainer of this work is **Mingyu Xia**.
         \nointerlineskip
         \makebox[.6\linewidth]{ }
       \fi:
-    \dollardollar@begin^^A \color_select:n { eqcolor }
+    \dollardollar@begin % \color_select:n { eqcolor }
     \fi:
   }
 \DeclareRobustCommand \]
@@ -402,61 +508,91 @@ The Current Maintainer of this work is **Mingyu Xia**.
     \ignorespaces
   }
 %    \end{macrocode}
-%
+% End the input stream of \file{whats-typeset-module.code.tex}.
 %    \begin{macrocode}
 \file_input_stop:
 %    \end{macrocode}
-%
+% End the optionlist |typeset| for \pkg{l3docstrip}.
 %    \begin{macrocode}
 %</typeset>
 %    \end{macrocode}
 %
 % \subsection{The \texttt{whats-layout-module.code.tex} file}
 %
+% Start the optionlist |layout| for \pkg{l3docstrip}.
 %    \begin{macrocode}
 %<*layout>
 %    \end{macrocode}
-%
+% Declare the module file.
 %    \begin{macrocode}
-\whatsnote_provide_module:n { layout }
+\@@_provide_module:n { layout }
 %    \end{macrocode}
-%
+% Load the \pkg{anyfontsize}, \pkg{lmodern}, \pkg{microtype}, \pkg{manfnt},
+% \pkg{ragged2e}, \pkg{soul}, \pkg{libertine}, \pkg{ulem}, \pkg{xcolor}
+% packages.
 %    \begin{macrocode}
-% Graphics
 \RequirePackage{anyfontsize, lmodern, microtype, manfnt, ragged2e, soul}
 \RequirePackage[mono = false, osf]{libertine}
 \RequirePackage[normalem]{ulem}
 \RequirePackage[svgnames]{xcolor}
+%    \end{macrocode}
+% Config the \pkg{geometry}.
+%    \begin{macrocode}
 \RequirePackage[left  = 1.25in, vmargin = 1in, headheight = 15pt,
                 right = .75in,  headsep = 15pt]{geometry}
+%    \end{macrocode}
+%    \begin{macrocode}
 \RequirePackage{graphicx, pgfplots}
-\pgfplotsset{compat = newest}
 \graphicspath{{./media/logos/} {./media/}}
+\pgfplotsset{compat = newest}
 % Table and list
 \RequirePackage{booktabs, array, enumext}
 \setenumext[enumext, 1]{label = (\alph*)}
 \setenumext[enumext, 2]{label = \roman*.}
 \RequirePackage[inline]{enumitem}
-% Header & Footer
+%    \end{macrocode}
+% Config the header and footer.
+%    \begin{macrocode}
 \RequirePackage{fancyhdr}
+\renewcommand* \chaptermark [1]
+  {
+    \markboth
+      {
+        \normalfont \biolinumLF \scshape
+        \int_compare:nNnT { \c@secnumdepth } > { \m@ne }
+          { \if@mainmatter \@chapapp \ \thechapter .~\ \fi } #1
+      } {}
+  }
+\renewcommand* \sectionmark [1]
+  {
+    \markright
+      {
+        \normalfont \sffamily
+        \int_compare:nNnT { \c@secnumdepth } > { \z@ } { \thesection . \ } #1
+      }
+  }
 \fancyhead[OR]{\sffamily \rightmark}
 \fancyhead[OL]{\sffamily \thepage}
 \fancyhead[EL]{\sffamily \leftmark}
 \fancyhead[ER]{\sffamily \thepage}
 \fancyfoot[L,C,R]{}
+\pagestyle{fancy}
+%    \end{macrocode}
+% Config the header rule and footer rule style.
+%    \begin{macrocode}
 \renewcommand* \headrulewidth {1pt}
 \renewcommand* \footrulewidth {.5pt}
 \hook_gput_code:nnn { cmd / headrule / before } {.}
   { \color_select:n { black!25 } }
-\dim_new:N \l_@@_footrule_tmp_dim
 \renewcommand \footrule
   {
     \if@fancyplain \let \footrulewidth \plainfootrulewidth \fi
     \color_select:n { black!25 }
     \hrule \@width \headwidth \@height \footrulewidth
   }
-\pagestyle{fancy}
-% Paragraphs
+%    \end{macrocode}
+% Paragraphs configurations.
+%    \begin{macrocode}
 \linespread{1.2}
 \RequirePackage{titlesec, subcaption}
 \titleformat \chapter [hang] {\huge \bfseries \sffamily}
@@ -467,16 +603,10 @@ The Current Maintainer of this work is **Mingyu Xia**.
 \columnratio{.64}
 \RequirePackage{framed}
 \setlength \FrameSep {\z@}
-\renewcommand* \chaptermark[1] {
-  \markboth {\normalfont \biolinumLF \scshape
-    \ifnum \c@secnumdepth >\m@ne
-      \if@mainmatter \@chapapp \ \thechapter .~\ \fi
-    \fi #1}{}}
-\renewcommand* \sectionmark[1] {
-  \markright {\normalfont \sffamily
-    \ifnum \c@secnumdepth >\z@ \thesection . \
-    \fi #1}}
 \setlength \parindent {\z@}
+%    \end{macrocode}
+% Config the appearance of appendix in toc.
+%    \begin{macrocode}
 \renewcommand \@pnumwidth {2.5em}
 \renewcommand \appendix {
   \cleardoublepage
@@ -494,35 +624,36 @@ The Current Maintainer of this work is **Mingyu Xia**.
   \pagenumbering{roman}
 }
 %    \end{macrocode}
-%
+% End the input stream of \file{whats-layout-module.code.tex}.
 %    \begin{macrocode}
 \file_input_stop:
 %    \end{macrocode}
-%
+% End the optionlist |class| for \pkg{l3docstrip}.
 %    \begin{macrocode}
 %</layout>
 %    \end{macrocode}
 %
 % \subsection{The \texttt{whats-theorem-module.code.tex} file}
 %
+% Start the optionlist |theorem| for \pkg{l3docstrip}.
 %    \begin{macrocode}
 %<*theorem>
 %    \end{macrocode}
-%
+% Declare the module file.
 %    \begin{macrocode}
-\whatsnote_provide_module:n { theorem }
+\@@_provide_module:n { theorem }
 %    \end{macrocode}
-%
+% Load the \pkg{keytheorems} package, and predefine the following environments.
 %    \begin{macrocode}
 \RequirePackage{keytheorems}
 \newcounter {week}
 \newcommand \newweek { \refstepcounter{week} \clearpage }
-\newkeytheorem{theorem}[parent = section, style = definition]
-\newkeytheorem{example}[parent = section, style = definition]
-\newkeytheorem{definition}[parent = section, style = definition]
-\newkeytheorem{problem}[parent = week, style = definition]
-\newkeytheorem{solution}[numbered = false, style = definition]
-\newkeytheorem{remark}[numbered = false, style = remark]
+\newkeytheorem { theorem    } [ parent    = section, style = definition ]
+\newkeytheorem { example    } [ parent    = section, style = definition ]
+\newkeytheorem { definition } [ parent    = section, style = definition ]
+\newkeytheorem { problem    } [ parent    = week,    style = definition ]
+\newkeytheorem { solution   } [ numbered  = false,   style = definition ]
+\newkeytheorem { remark     } [ numbered  = false,   style = remark     ]
 %    \end{macrocode}
 %
 %    \begin{macrocode}
@@ -535,14 +666,16 @@ The Current Maintainer of this work is **Mingyu Xia**.
 %
 % \subsection{The \texttt{whats-cover-module.code.tex} file}
 %
+% Start the optionlist |cover| for \pkg{l3docstrip}.
 %    \begin{macrocode}
 %<*cover>
 %    \end{macrocode}
-%
+% Declare the module file.
 %    \begin{macrocode}
-\whatsnote_provide_module:n { cover }
+\@@_provide_module:n { cover }
 %    \end{macrocode}
-%
+% Load the \pkg{tikz} package for graphing the 
+% (The |expl3| syntax needs to be temporarily turned off).
 %    \begin{macrocode}
 \RequirePackage{tikz, zref-totpages}
 \ExplSyntaxOff
@@ -550,8 +683,24 @@ The Current Maintainer of this work is **Mingyu Xia**.
 \tikzset{ > = Stealth, every picture/.append style = {
           line join = round, line cap = round, thick } }
 \ExplSyntaxOn
+%    \end{macrocode}
+% \begin{macro}{\coverset}
+% Macro for cover configuration by setting keys.
+%    \begin{macrocode}
 \DeclareDocumentCommand \coverset { m } { \keys_set:nn { @@ / coverset } {#1} }
+%    \end{macrocode}
+% \begin{variable}{\l_@@_cover_llogos_clist}
+% Comma list for storing the left logos' path.
+%    \begin{macrocode}
 \clist_new:N \l_@@_cover_llogos_clist
+%    \end{macrocode}
+% \begin{variable}
+%   {
+%     \@title, \@author, \@afill, \@date, \l_@@_cover_extinfo_tl,
+%     \l_@@_cover_head_tl,                \l_@@_cover_clogo_tl
+%   }
+% Token lists for storing elements on the cover page.
+%    \begin{macrocode}
 \keys_define:nn { @@ / coverset }
   {
     title         .tl_gset:N    = \@title,
@@ -562,21 +711,46 @@ The Current Maintainer of this work is **Mingyu Xia**.
     extinfo       .tl_set:N     = \l_@@_cover_extinfo_tl,
     head          .tl_set:N     = \l_@@_cover_head_tl,
     clogo         .tl_set:N     = \l_@@_cover_clogo_tl,
-    clogo-pattern .tl_set:N     = \l_@@_cover_clogo_pattern_tl,
     llogos        .clist_set:N  = \l_@@_cover_llogos_clist,
   }
-\DeclareRobustCommand *\sidehead [1] { \tl_gset:Nn \@sidehead {#1} }
-\DeclareRobustCommand *\sidefoot [1] { \tl_gset:Nn \@sidefoot {#1} }
+%    \end{macrocode}
+% \end{variable}
+% \end{variable}
+% \end{macro}
+% \begin{macro}{\sidehead, \sidefoot}
+% \begin{variable}{\@sidehead, \@sidefoot}
+% Macros for configuring the header and footer on the sidebar.
+%    \begin{macrocode}
+\DeclareRobustCommand * \sidehead [1] { \tl_gset:Nn \@sidehead {#1} }
+\DeclareRobustCommand * \sidefoot [1] { \tl_gset:Nn \@sidefoot {#1} }
+%    \end{macrocode}
+% \end{variable}
+% Set the header and footer of the sidebar \meta{title name},
+% \meta{page number} / \meta{total page} by default.
+%    \begin{macrocode}
 \sidehead{\@title}
 \sidefoot{\thepage\,/\,\ztotpages}
-\hook_gset_rule:nnnn { shipout / background } { @@ } { before } { pgfrcs }
+%    \end{macrocode}
+% \end{macro}
+% Declare a hook for sidebar.
+%    \begin{macrocode}
+\hook_gset_rule:nnnn { shipout / background } { shipout_@@ }
+                     { before } { pgfrcs }
+%    \end{macrocode}
+% \begin{macro}{\maketitle}
+% Redefine the \cs{maketitle} macro for graphing the cover and load the hook.
+%    \begin{macrocode}
 \DeclareDocumentCommand \maketitle { O { gray } }
   {
     \@@_@maketitle:n {#1}
-    \hook_gput_code:nnn { shipout / background } { @@ }
+    \hook_gput_code:nnn { shipout / background } { shipout_@@ }
       { \if@mainmatter \@@_sidebar_hook:n {#1} \fi }
   }
-\DeclareCommandCopy \save@cleardoublepage \cleardoublepage
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\@@_@maketitle:n}
+% The auxiliary command for \cs{maketitle}.
+%    \begin{macrocode}
 \cs_new_protected_nopar:Npn \@@_@maketitle:n #1
   {
     \pagecolor{#1!10}
@@ -645,6 +819,11 @@ The Current Maintainer of this work is **Mingyu Xia**.
     \end{titlepage}
     \pagecolor{Beige!30}
   }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\@@_sidebar_hook:n}
+% Hook for graphing the sidebar: different on odd and even pages.
+%    \begin{macrocode}
 \cs_new_protected:Npn \@@_sidebar_hook:n #1
   {
     \int_if_odd:nTF { \arabic { page } }
@@ -684,15 +863,15 @@ The Current Maintainer of this work is **Mingyu Xia**.
       }
   }
 %    \end{macrocode}
-%
+% \end{macro}
+% End the input stream of \file{whats-cover-module.code.tex}.
 %    \begin{macrocode}
 \file_input_stop:
 %    \end{macrocode}
-%
+% End the optionlist |cover| for \pkg{l3docstrip}.
 %    \begin{macrocode}
 %</cover>
 %    \end{macrocode}
-%
 % \end{implementation}
 % \clearpage
 % \PrintIndex
@@ -702,10 +881,8 @@ The Current Maintainer of this work is **Mingyu Xia**.
 \ProvidesExplPackage {thmlist} {2024-11-26} {0.1b}
   {Formally a part of the class litebook}
 \msg_new:nnn { thmlist } { Obsolete ~ LaTeX ~ Package }
-  { The ~ thmlist ~ package ~ is ~ now ~ obsoleted. ~ 
-    Please ~ load ~ the ~ `whatsnote' ~ class ~ instead, ~ or ~ 
-    access ~ the ~ 'obsolete ~ packages' ~ dictionary ~ on ~ CTAN.
-  }
+  { This ~ package ~ is ~ obsoleted, ~
+    using ~ the ~ `whatsnote' ~ class ~ instead. }
 \msg_error:nn { thmlist } { Obsolete ~ LaTeX ~ Package }
 \file_input_stop:
 %    \end{macrocode}
@@ -715,9 +892,8 @@ The Current Maintainer of this work is **Mingyu Xia**.
 \ProvidesExplClass {litebook} {2024-11-26} {0.2b}
   {Now replaced by the whatsnote class}
 \msg_new:nnn { litebook } { Obsolete ~ LaTeX ~ Package }
-  { The ~ litebook ~ class ~ is ~ now ~ obsoleted. ~ 
-    Please ~ load ~ the ~ `whatsnote' ~ class ~ instead, ~ or ~ 
-    access ~ the ~ 'obsolete ~ packages' ~ dictionary ~ on ~ CTAN. }
+  { This ~ package ~ is ~ obsoleted, ~
+    using ~ the ~ `whatsnote' ~ class ~ instead. }
 \msg_error:nn { litebook } { Obsolete ~ LaTeX ~ Package }
 \LoadClass{minimal}
 \file_input_stop:
@@ -728,9 +904,8 @@ The Current Maintainer of this work is **Mingyu Xia**.
 \ProvidesExplClass {litesolution} {2024-11-26} {2.4a}
   {Now replaced by the whatsnote class}
 \msg_new:nnn { litesolution } { Obsolete ~ LaTeX ~ Package }
-  { The ~ litesolution ~ class ~ is ~ now ~ obsoleted. ~ 
-    Please ~ load ~ the ~ `whatsnote' ~ class ~ instead, ~ or ~ 
-    access ~ the ~ 'obsolete ~ packages' ~ dictionary ~ on ~ CTAN. }
+  { This ~ package ~ is ~ obsoleted, ~
+    using ~ the ~ `whatsnote' ~ class ~ instead. }
 \msg_error:nn { litesolution } { Obsolete ~ LaTeX ~ Package }
 \LoadClass{minimal}
 \file_input_stop:
